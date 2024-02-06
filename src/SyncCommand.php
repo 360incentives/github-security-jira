@@ -17,7 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SyncCommand extends Command
 {
-
     /**
      * Name of the command.
      *
@@ -177,6 +176,7 @@ class SyncCommand extends Command
                     vulnerableManifestFilename
                     vulnerableManifestPath
                     vulnerableRequirements
+                    number
                   }
                 }
               }
@@ -264,8 +264,8 @@ GQL;
     protected function getGHClient(): GraphQLClient
     {
         $access_token = \getenv('GH_SECURITY_TOKEN');
-
-        return ClientBuilder::build('https://api.github.com/graphql', [
+        $graphql_url = \getenv('GITHUB_GRAPHQL_URL') ?: 'https://api.github.com/graphql';
+        return ClientBuilder::build($graphql_url, [
             'headers' => [
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer {$access_token}",

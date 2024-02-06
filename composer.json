@@ -3,10 +3,10 @@
     "description": "Create Jira tickets for GitHub security alerts",
     "license": "MIT",
     "require": {
-        "php": ">=7.2.0",
-        "softonic/graphql-client": "^1.2",
+        "php": ">=8.1",
+        "softonic/graphql-client": "^2.1",
         "symfony/console": "^5",
-        "symfony/yaml": "^5.0",
+        "symfony/yaml": "^6.1",
         "reload/jira-security-issue": "^1.0.0"
     },
     "repositories": [
@@ -21,7 +21,13 @@
         }
     },
     "require-dev": {
-        "appocular/coding-standard": "^1.0",
-        "phpstan/phpstan": "^0.12.5"
+        "phpstan/phpstan": "^1",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
     }
 }

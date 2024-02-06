@@ -8,7 +8,6 @@ use Reload\JiraSecurityIssue;
 
 class SecurityAlertIssue extends JiraSecurityIssue
 {
-
     /**
      * @var string
      */
@@ -40,6 +39,16 @@ class SecurityAlertIssue extends JiraSecurityIssue
     protected string $severity;
 
     /**
+     * @var int
+     */
+    protected int $alertNumber;
+
+    /**
+     * @var string
+     */
+    protected string $advisorySummary;
+
+    /**
      * phpcs:disable SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
      *
      * @param array<string,mixed> $data
@@ -53,6 +62,8 @@ class SecurityAlertIssue extends JiraSecurityIssue
         $this->manifestPath = \pathinfo($data['vulnerableManifestPath'], \PATHINFO_DIRNAME);
         $this->id = $data['securityVulnerability']['advisory']['ghsaId'];
         $this->severity = $data['securityVulnerability']['severity'];
+        $this->alertNumber = $data['number'];
+        $this->advisorySummary = $data['securityVulnerability']['advisory']['summary'];
 
         $references = [];
 
@@ -67,10 +78,12 @@ class SecurityAlertIssue extends JiraSecurityIssue
         $advisory_description = \wordwrap($data['securityVulnerability']['advisory']['description'] ?? '', 100);
         $ecosystem = $data['securityVulnerability']['package']['ecosystem'] ?? '';
         $githubRepo = \getenv('GITHUB_REPOSITORY') ?: '';
+        $githubUrl = \getenv('GITHUB_SERVER_URL') ?: 'https://github.com';
         $safeVersion = $this->safeVersion ?? 'no fix';
 
         $body = <<<EOT
-- Repository: [{$githubRepo}|https://github.com/{$githubRepo}]
+- Repository: [{$githubRepo}|{$githubUrl}/{$githubRepo}]
+- Alert: [{$this->advisorySummary}|{$githubUrl}/{$githubRepo}/security/dependabot/{$this->alertNumber}]
 - Package: {$this->package} ($ecosystem)
 - Vulnerable version: {$this->vulnerableVersionRange}
 - Secure version: {$safeVersion}
@@ -125,6 +138,6 @@ EOT;
             return "{$this->package}:{$identifier}";
         }
 
-        return "{$this->package}:{$this->manifestPath}:{$identifier}";
+        return str_ireplace(" ", "_", "{$this->package}:{$this->manifestPath}:{$identifier}");
     }
 }
